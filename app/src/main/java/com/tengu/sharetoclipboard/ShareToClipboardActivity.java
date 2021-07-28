@@ -7,7 +7,6 @@ import android.content.ContentResolver;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.provider.ContactsContract.Contacts;
 import android.widget.Toast;
 
 import com.tengu.sharetoclipboard.utils.NotificationUtil;
@@ -145,13 +144,42 @@ public class ShareToClipboardActivity extends Activity {
 
     private void copyToClipboard(String clipboardText) {
         ClipboardManager clipboard = (android.content.ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
-        ClipData clip = ClipData.newPlainText("text", clipboardText);
-        clipboard.setPrimaryClip(clip);
+        /*        Inf Hyd Confessions 2021
+        responses:-
 
-        if (PreferenceUtil.shouldDisplayNotification(this)) {
-            NotificationUtil.createNotification(this);
-        } else {
-            showToast(getString(R.string.notification_title));
+                1. Mention your Age and Gender. ex: (26/M)
+        Answer: 27 M
+
+        2. Start your confession 😊:
+        Answer: Dear all, Chala mandi melo developers or app support members ai untaru, coding ante ento teledhu Naku so koncham basics nerchukovali ani undi evaraina help chestara ( need some best tutorials/ blogs/ website ) nalanti valu coding nerchukovali anukuntaru but ardham kaka tension padtu untaru alanti vala kosam help avvachu me replies.
+
+        Shared from "surveyheart.com"*/
+
+        if (clipboardText.contains("confession") && clipboardText.contains("Gender")){
+            clipboardText = clipboardText.replace("Answer: ","")
+                    .replace("responses:-","")
+                    .replace("\n\n","\n")
+                    .replace("Responses:-","")
+                    .replace("Inf Hyd Confessions 2021","")
+                    .replace("Inf Hyd Confessions","")
+                    .replace("1. Mention your Age and Gender. ex: (26/M)","")
+                    .replace("2. Start your confession \uD83D\uDE0A:","")
+                    .replace("Shared from \"surveyheart.com\"","")
+                    .trim()
+            ;
+            ClipData clip = ClipData.newPlainText("text", clipboardText);
+            clipboard.setPrimaryClip(clip);
+            showToast("Confession Copied");
+        }else {
+
+            ClipData clip = ClipData.newPlainText("text", clipboardText);
+            clipboard.setPrimaryClip(clip);
+
+            if (PreferenceUtil.shouldDisplayNotification(this)) {
+                NotificationUtil.createNotification(this);
+            } else {
+                showToast(getString(R.string.notification_title));
+            }
         }
     }
 }
