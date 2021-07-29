@@ -26,29 +26,31 @@
             android:textStyle="bold"/>
     </androidx.appcompat.widget.Toolbar>
 
-    <ScrollView android:layout_width="match_parent"
-                android:layout_height="match_parent">
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#888383">
 
-        <LinearLayout android:layout_width="match_parent"
-                      android:layout_height="wrap_content"
-                      android:background="@color/primary50"
-                      android:orientation="vertical"
-                      android:padding="@dimen/activity_horizontal_margin"
-                      tools:context="com.tengu.sharetoclipboard.MainActivity">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/primary50"
+            android:orientation="vertical"
+            android:padding="@dimen/activity_horizontal_margin"
+            tools:context="com.tengu.sharetoclipboard.MainActivity">
 
             <androidx.cardview.widget.CardView
-                xmlns:card_view="http://schemas.android.com/apk/res-auto"
                 android:id="@+id/cardViewTengu"
                 style="@style/CardView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/activity_vertical_margin"
-                card_view:cardCornerRadius="@dimen/card_radius">
+                app:cardCornerRadius="@dimen/card_radius">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@color/accent500"
+                    android:background="#000000"
                     android:orientation="horizontal">
 
                     <TextView
@@ -58,7 +60,9 @@
                         android:layout_height="match_parent"
                         android:layout_weight="1"
                         android:gravity="center_vertical"
-                        android:text="@string/apps_developer"/>
+                        android:text="@string/apps_developer"
+                        android:textColor="#FFFFFF"
+                        app:fontFamily="sans-serif-condensed" />
 
 
                     <LinearLayout
@@ -73,7 +77,7 @@
                             android:layout_width="125dp"
                             android:layout_height="125dp"
                             android:contentDescription="@string/app_name"
-                            android:src="@drawable/ic_tengu"/>
+                            android:src="@drawable/ic_tengu" />
                     </LinearLayout>
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
@@ -85,17 +89,19 @@
                 android:layout_marginBottom="@dimen/activity_vertical_margin"
                 android:background="@color/accent500"
                 app:cardCornerRadius="@dimen/card_radius">
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical">
+
                     <TextView
                         style="@style/CardView.Title"
                         android:layout_width="wrap_content"
                         android:layout_height="0dp"
                         android:layout_gravity="center"
                         android:layout_weight="1"
-                        android:text="@string/settings"/>
+                        android:text="@string/settings" />
 
                     <CheckBox
                         android:id="@+id/showTitleOnShare"
@@ -117,8 +123,7 @@
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
 
-            <androidx.cardview.widget.CardView
-                xmlns:card_view="http://schemas.android.com/apk/res-auto"
+            <androidx.cardview.widget.CardView xmlns:card_view="http://schemas.android.com/apk/res-auto"
                 android:id="@+id/cardViewAbout"
                 style="@style/CardView"
                 android:layout_width="match_parent"
@@ -126,6 +131,7 @@
                 android:layout_marginBottom="@dimen/activity_vertical_margin"
                 android:background="@color/accent500"
                 card_view:cardCornerRadius="@dimen/card_radius">
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -137,7 +143,7 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
                         android:layout_weight="1"
-                        android:text="@string/about"/>
+                        android:text="@string/about" />
 
                     <TextView
                         style="@style/CardView.Content"
@@ -146,20 +152,20 @@
                         android:layout_margin="10dp"
                         android:layout_weight="1"
                         android:autoLink="all"
-                        android:text="@string/about_content"/>
+                        android:text="@string/about_content" />
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
 
             <Button
                 android:id="@+id/buttonRemoveLauncher"
+                style="@style/CustomButtonStyle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="@dimen/activity_horizontal_margin"
-                android:layout_marginRight="@dimen/activity_horizontal_margin"
                 android:layout_marginTop="@dimen/activity_vertical_margin"
+                android:layout_marginRight="@dimen/activity_horizontal_margin"
                 android:text="@string/remove_launcher"
-                style="@style/CustomButtonStyle"
-                android:textSize="@dimen/card_view_content"/>
+                android:textSize="@dimen/card_view_content" />
         </LinearLayout>
     </ScrollView>
 </LinearLayout>
