@@ -120,6 +120,12 @@
                         android:layout_margin="8dp"
                         android:checked="false"
                         android:text="@string/display_notification_for_share" />
+
+                    <Button
+                        android:id="@+id/ssButton"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="SS" />
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
 

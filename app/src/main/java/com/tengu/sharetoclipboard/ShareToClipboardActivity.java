@@ -114,7 +114,7 @@ public class ShareToClipboardActivity extends Activity {
     }
 
     private void showToast(String text) {
-        Toast.makeText(this, text, Toast.LENGTH_LONG).show();
+        Toast.makeText(this, text, Toast.LENGTH_SHORT).show();
     }
 
     private void handleSendText(Intent intent, int err_msg) {
@@ -170,6 +170,10 @@ public class ShareToClipboardActivity extends Activity {
             ClipData clip = ClipData.newPlainText("text", clipboardText);
             clipboard.setPrimaryClip(clip);
             showToast("Confession Copied");
+            Intent confessionViewIntent = new Intent(getApplicationContext(), ConfessionView.class);
+            confessionViewIntent.putExtra("mytext",clipboardText);
+            startActivity(confessionViewIntent);
+
         }else {
 
             ClipData clip = ClipData.newPlainText("text", clipboardText);

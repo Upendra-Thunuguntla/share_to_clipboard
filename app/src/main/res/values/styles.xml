@@ -1,4 +1,5 @@
 <resources>
+
     <style name="Theme.Transparent" parent="android:Theme">
         <item name="android:windowIsTranslucent">true</item>
         <item name="android:windowBackground">@android:color/transparent</item>
@@ -43,5 +44,10 @@
     <style name="CustomButtonStyle" parent="Widget.AppCompat.Button.Colored">
         <item name="colorButtonNormal">@color/primary500</item>
         <item name="colorControlHighlight">@color/primary600</item>
+    </style>
+
+    <style name="Widget.Theme.Transparent.MyView" parent="">
+        <item name="android:background">@color/gray_400</item>
+        <item name="exampleColor">@color/light_blue_400</item>
     </style>
 </resources>

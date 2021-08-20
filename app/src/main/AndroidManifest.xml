@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
           package="com.tengu.sharetoclipboard">
-
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
     <application
+        android:requestLegacyExternalStorage="true"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -33,6 +35,11 @@
             android:name=".ShareToOtherAppsActivity"
             android:label="@string/share_to_clipboard_activity"
             android:noHistory="true">
+        </activity>
+        <activity
+            android:name=".ConfessionView"
+            android:label="Confession View"
+            android:theme="@style/AppTheme">
         </activity>
     </application>
 

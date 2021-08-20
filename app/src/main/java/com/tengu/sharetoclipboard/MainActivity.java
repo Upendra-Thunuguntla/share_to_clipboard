@@ -12,6 +12,7 @@ import androidx.appcompat.widget.Toolbar;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 
@@ -27,6 +28,23 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         setUpToolbar();
+
+        Button buttonOne = findViewById(R.id.ssButton);
+        buttonOne.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                System.out.println("Button Clicked");
+                Intent confessionViewIntent = new Intent(getApplicationContext(), ConfessionView.class);
+                confessionViewIntent.putExtra("mytext","Inf Hyd Confessions 2021\n" +
+                        "        responses:-\n" +
+                        "\n" +
+                        "                1. Mention your Age and Gender. ex: (26/M)\n" +
+                        "        Answer: 27 M\n" +
+                        "\n" +
+                        "        2. Start your confession \uD83D\uDE0A:\n" +
+                        "        Answer: Dear all, Chala mandi melo developers or app support members ai untaru, coding ante ento teledhu Naku so koncham basics nerchukovali ani undi evaraina help chestara ( need some best tutorials/ blogs/ website ) nalanti valu coding nerchukovali anukuntaru but ardham kaka tension padtu untaru alanti vala kosam help avvachu me replies.\n");
+                startActivity(confessionViewIntent);
+
+                }});
 
         findViewById(R.id.cardViewTengu).setOnClickListener(new View.OnClickListener() {
             @Override
