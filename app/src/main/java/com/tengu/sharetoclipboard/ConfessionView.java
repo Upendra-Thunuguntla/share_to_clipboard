@@ -26,16 +26,14 @@ import java.util.Date;
  */
 public class ConfessionView extends AppCompatActivity {
 
-    Button click;
     TextView confText;
     private static final int REQUEST_EXTERNAL_STORAGe = 1;
-    private static String[] permissionstorage = {Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE};
+    private static final String[] permissionstorage = {Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.sample_confession_view);
-        click = findViewById(R.id.clickme);
         verifystoragepermissions(this);
 
 
@@ -43,8 +41,6 @@ public class ConfessionView extends AppCompatActivity {
 
         confText.setText(getIntent().getStringExtra("mytext"));
 
-        // adding beep sound
-//        click.setOnClickListener(new View.OnClickListener() {
         confText.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View view) {
@@ -77,13 +73,13 @@ public class ConfessionView extends AppCompatActivity {
             }
 
             // File name
-            String path = dirpath + "/" + filename + "-" + format + ".jpg";
+            String path = dirpath + "/" + filename + "-" + format + ".png";
             view.setDrawingCacheEnabled(true);
             Bitmap bitmap = Bitmap.createBitmap(view.getDrawingCache());
             view.setDrawingCacheEnabled(false);
             File imageurl = new File(path);
             FileOutputStream outputStream = new FileOutputStream(imageurl);
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream);
+            bitmap.compress(Bitmap.CompressFormat.PNG, 80, outputStream);
             outputStream.flush();
             outputStream.close();
             return imageurl;
