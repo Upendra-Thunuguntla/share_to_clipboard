@@ -28,7 +28,7 @@ public class ShareToClipboardActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        
+
         Intent intent = getIntent();
         String action = intent.getAction();
         String type = intent.getType();

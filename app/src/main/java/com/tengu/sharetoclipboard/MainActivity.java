@@ -7,14 +7,15 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 
 import com.tengu.sharetoclipboard.utils.PreferenceUtil;
 
@@ -44,7 +45,7 @@ public class MainActivity extends AppCompatActivity {
                         "        Answer: Dear all, Chala mandi melo developers or app support members ai untaru, coding ante ento teledhu Naku so koncham basics nerchukovali ani undi evaraina help chestara ( need some best tutorials/ blogs/ website ) nalanti valu coding nerchukovali anukuntaru but ardham kaka tension padtu untaru alanti vala kosam help avvachu me replies.\n");
                 startActivity(confessionViewIntent);
 
-                }});
+            }});
 
         findViewById(R.id.cardViewTengu).setOnClickListener(new View.OnClickListener() {
             @Override

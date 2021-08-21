@@ -7,7 +7,7 @@ import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.Environment;
 import android.view.View;
-import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -18,14 +18,13 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.attribute.FileAttribute;
 import java.util.Date;
 /**
  * TODO: document your custom view class.
  */
 public class ConfessionView extends AppCompatActivity {
 
+    LinearLayout bg;
     TextView confText;
     private static final int REQUEST_EXTERNAL_STORAGe = 1;
     private static final String[] permissionstorage = {Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE};
@@ -38,9 +37,7 @@ public class ConfessionView extends AppCompatActivity {
 
 
         confText = (TextView)findViewById(R.id.conftextView);
-
         confText.setText(getIntent().getStringExtra("mytext"));
-
         confText.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View view) {
@@ -55,6 +52,22 @@ public class ConfessionView extends AppCompatActivity {
                 ConfessionView.super.finish();
             }
         });
+
+        bg = (LinearLayout) findViewById(R.id.bgLayout);
+        bg.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+                Toast.makeText(ConfessionView.this, "Captured", Toast.LENGTH_SHORT).show();
+                screenshot(getWindow().getDecorView().getRootView(), "Confession");
+                return true;
+            }
+        });
+        bg.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ConfessionView.super.finish();
+            }
+        });
     }
 
     protected static File screenshot(View view, String filename) {
@@ -64,7 +77,7 @@ public class ConfessionView extends AppCompatActivity {
         CharSequence format = android.text.format.DateFormat.format("yyyy-MM-dd_hh_mm_ss", date);
         try {
             // Initialising the directory of storage
-            String dirpath = Environment.getExternalStorageDirectory() + "/DCIM/Confessions/";
+            String dirpath = Environment.getExternalStorageDirectory() + "/Confessions/";
             File file = new File(dirpath);
             if (!file.exists()) {
                 System.out.println("Folder does not exist creating folder");
@@ -79,7 +92,7 @@ public class ConfessionView extends AppCompatActivity {
             view.setDrawingCacheEnabled(false);
             File imageurl = new File(path);
             FileOutputStream outputStream = new FileOutputStream(imageurl);
-            bitmap.compress(Bitmap.CompressFormat.PNG, 80, outputStream);
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream);
             outputStream.flush();
             outputStream.close();
             return imageurl;
