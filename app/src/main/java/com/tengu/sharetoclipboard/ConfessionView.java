@@ -2,10 +2,13 @@ package com.tengu.sharetoclipboard;
 
 import android.Manifest;
 import android.app.Activity;
+import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.Environment;
+import android.provider.MediaStore;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -19,6 +22,8 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Date;
+import java.util.Locale;
+
 /**
  * TODO: document your custom view class.
  */
@@ -32,7 +37,7 @@ public class ConfessionView extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.sample_confession_view);
+        setContentView(R.layout.activity_confession);
         verifystoragepermissions(this);
 
 
@@ -70,32 +75,48 @@ public class ConfessionView extends AppCompatActivity {
         });
     }
 
-    protected static File screenshot(View view, String filename) {
+    protected File screenshot(View view, String filename) {
         Date date = new Date();
 
         // Here we are initialising the format of our image name
         CharSequence format = android.text.format.DateFormat.format("yyyy-MM-dd_hh_mm_ss", date);
         try {
             // Initialising the directory of storage
-            String dirpath = Environment.getExternalStorageDirectory() + "/Confessions/";
-            File file = new File(dirpath);
-            if (!file.exists()) {
+            String dirPath = Environment.getExternalStorageDirectory() + "/Confessions/";
+            File confessionsDirectory = new File(dirPath);
+            if (!confessionsDirectory.exists()) {
                 System.out.println("Folder does not exist creating folder");
-                boolean mkdir = file.mkdirs();
+                boolean mkdir = confessionsDirectory.mkdirs();
                 System.out.println(mkdir);
             }
 
             // File name
-            String path = dirpath + "/" + filename + "-" + format + ".png";
+            String path = dirPath + "/" + filename + "-" + format + ".png";
             view.setDrawingCacheEnabled(true);
             Bitmap bitmap = Bitmap.createBitmap(view.getDrawingCache());
             view.setDrawingCacheEnabled(false);
-            File imageurl = new File(path);
-            FileOutputStream outputStream = new FileOutputStream(imageurl);
+            File imageFile = new File(path);
+            FileOutputStream outputStream = new FileOutputStream(imageFile);
             bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream);
             outputStream.flush();
             outputStream.close();
-            return imageurl;
+
+            bitmap.recycle();
+
+            ContentValues values = new ContentValues();
+            values.put(MediaStore.Images.Media.TITLE, "Photo");
+            values.put(MediaStore.Images.Media.DESCRIPTION, "Edited");
+            values.put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg");
+            values.put(MediaStore.Images.Media.DATE_TAKEN, System.currentTimeMillis ());
+            values.put(MediaStore.Images.Media.DATE_ADDED, System.currentTimeMillis());
+            values.put(MediaStore.Images.ImageColumns.BUCKET_ID, imageFile.toString().toLowerCase(Locale.US).hashCode());
+            values.put(MediaStore.Images.ImageColumns.BUCKET_DISPLAY_NAME, imageFile.getName().toLowerCase(Locale.US));
+            values.put("_data", imageFile.getAbsolutePath());
+
+            ContentResolver cr = getContentResolver();
+            cr.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
+
+            return imageFile;
 
         } catch (FileNotFoundException io) {
             io.printStackTrace();

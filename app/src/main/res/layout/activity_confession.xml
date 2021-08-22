@@ -13,6 +13,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center|left"
+        android:minHeight="350dp"
         android:paddingLeft="30dp"
         android:paddingRight="30dp"
         android:textColor="#FFFFFF" />
