@@ -21,65 +21,137 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.Locale;
+import java.util.TreeMap;
 
 /**
  * TODO: document your custom view class.
  */
 public class ConfessionView extends AppCompatActivity {
 
-    LinearLayout bg;
+    LinearLayout backGround;
     TextView confText;
-    private static final int REQUEST_EXTERNAL_STORAGe = 1;
-    private static final String[] permissionstorage = {Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE};
+    private final int maxWords = 200;
+    private int currentPage = 0;
+    private TreeMap<Integer,String> pages;
+    private String confessionText;
+    private static final int REQUEST_EXTERNAL_STORAGE = 1;
+    private static final String[] PERMISSION_STORAGE = {Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE};
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_confession);
-        verifystoragepermissions(this);
+        verifyStoragePermissions(this);
 
+        backGround = (LinearLayout) findViewById(R.id.bgLayout);
 
+        //Getting Text
+        confessionText = getIntent().getStringExtra("mytext");
+
+        //Setting text into View
         confText = (TextView)findViewById(R.id.conftextView);
-        confText.setText(getIntent().getStringExtra("mytext"));
+        confText.setText(confessionText);
+
+        //Getting multiple pages in case of long confession
+        pages = processText(confessionText);
+
+        //Long Press to take screenshot
         confText.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View view) {
-                Toast.makeText(ConfessionView.this, "Captured", Toast.LENGTH_SHORT).show();
-                screenshot(getWindow().getDecorView().getRootView(), "Confession");
-                return true;
-            }
-        });
-        confText.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ConfessionView.super.finish();
+                return callScreenShot("");
             }
         });
 
-        bg = (LinearLayout) findViewById(R.id.bgLayout);
-        bg.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View view) {
-                Toast.makeText(ConfessionView.this, "Captured", Toast.LENGTH_SHORT).show();
-                screenshot(getWindow().getDecorView().getRootView(), "Confession");
-                return true;
-            }
-        });
-        bg.setOnClickListener(new View.OnClickListener() {
+        //If clicked on long text each part will be shown for each click
+        //Screenshot is automatic in this case after second Tap
+        confText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ConfessionView.super.finish();
+                if (currentPage>0 && currentPage <= pages.size())
+                    callScreenShot(""+(currentPage));
+                if (currentPage >= pages.size())
+                    killScreen();
+
+                confText.setText("");
+                confText.setText(pages.get(currentPage));
+                confText.clearComposingText();
+                System.out.println(pages.get(currentPage));
+
+                currentPage++;
+            }
+        });
+
+        //Imitating text view for screenshot
+        backGround.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+                return callScreenShot("");
+            }
+        });
+        //Tap on empty space to close
+        backGround.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                killScreen();
             }
         });
     }
 
-    protected File screenshot(View view, String filename) {
-        Date date = new Date();
+    /*
+    To Close the Current Screen
+     */
+    protected void killScreen(){
+        ConfessionView.super.finish();
+    }
 
+    /*
+    Showing Toast with page number and
+     */
+    protected boolean callScreenShot(String i){
+        Date date = new Date();
         // Here we are initialising the format of our image name
         CharSequence format = android.text.format.DateFormat.format("yyyy-MM-dd_hh_mm_ss", date);
+        Toast.makeText(ConfessionView.this, "Captured " + i, Toast.LENGTH_SHORT).show();
+        screenshot(getWindow().getDecorView().getRootView(), "Confession_"+format+"_"+i);
+        return true;
+    }
+
+    /*
+    Process and split text into 200 worded parts
+     */
+    protected TreeMap<Integer,String> processText(String confessionText){
+        TreeMap<Integer,String> multiPageConfession = new TreeMap<Integer,String>();
+        String words[] = confessionText.split(" ");
+        int wordCount = words.length;
+        int keyCount = (int) Math.ceil(wordCount/(double)maxWords);
+
+        for (int i = 0; i < keyCount;i++){
+            StringBuilder sb = new StringBuilder();
+            for (int j=i*maxWords;j<((i+1)*maxWords < wordCount ? (i+1)*maxWords : wordCount);j++){
+                sb.append(words[j]);
+                sb.append(" ");
+            }
+            multiPageConfession.put(i, sb.toString().trim());
+        }
+
+//        System.out.println(keyCount);
+        return multiPageConfession;
+    }
+
+    public static<T> T[] subArray(T[] array, int beg, int end) {
+        return Arrays.copyOfRange(array, beg, end);
+    }
+
+    public static<T> T[] subArray(T[] array, double beg, double end) {
+        return subArray(array, (int)beg, (int)end);
+    }
+
+    protected File screenshot(View view, String filename) {
         try {
             // Initialising the directory of storage
             String dirPath = Environment.getExternalStorageDirectory() + "/Confessions/";
@@ -89,9 +161,8 @@ public class ConfessionView extends AppCompatActivity {
                 boolean mkdir = confessionsDirectory.mkdirs();
                 System.out.println(mkdir);
             }
-
             // File name
-            String path = dirPath + "/" + filename + "-" + format + ".png";
+            String path = dirPath + "/" + filename + ".png";
             view.setDrawingCacheEnabled(true);
             Bitmap bitmap = Bitmap.createBitmap(view.getDrawingCache());
             view.setDrawingCacheEnabled(false);
@@ -103,6 +174,7 @@ public class ConfessionView extends AppCompatActivity {
 
             bitmap.recycle();
 
+            //Adding Metadata for Media scan visibility
             ContentValues values = new ContentValues();
             values.put(MediaStore.Images.Media.TITLE, "Photo");
             values.put(MediaStore.Images.Media.DESCRIPTION, "Edited");
@@ -127,13 +199,13 @@ public class ConfessionView extends AppCompatActivity {
     }
 
     // verifying if storage permission is given or not
-    public static void verifystoragepermissions(Activity activity) {
+    public static void verifyStoragePermissions(Activity activity) {
 
         int permissions = ActivityCompat.checkSelfPermission(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE);
 
         // If storage permission is not given then request for External Storage Permission
         if (permissions != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(activity, permissionstorage, REQUEST_EXTERNAL_STORAGe);
+            ActivityCompat.requestPermissions(activity, PERMISSION_STORAGE, REQUEST_EXTERNAL_STORAGE);
         }
     }
 }
