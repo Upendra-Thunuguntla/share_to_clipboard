@@ -9,6 +9,9 @@ import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.text.Layout;
+import android.text.StaticLayout;
+import android.text.TextPaint;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -33,7 +36,7 @@ public class ConfessionView extends AppCompatActivity {
 
     LinearLayout backGround;
     TextView confText;
-    private final int maxWords = 200;
+    private int maxWords = 200;
     private int currentPage = 0;
     private TreeMap<Integer,String> pages;
     private String confessionText;
@@ -54,11 +57,11 @@ public class ConfessionView extends AppCompatActivity {
 
         //Setting text into View
         confText = (TextView)findViewById(R.id.conftextView);
-        confText.setText(confessionText);
+//        confText.setText(confessionText);
 
         //Getting multiple pages in case of long confession
-        pages = processText(confessionText);
-
+//        pages = processTextAutoSplit(confText,confessionText,maxWords);
+        pages = processText(confessionText,maxWords);
         //Long Press to take screenshot
         confText.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
@@ -72,6 +75,13 @@ public class ConfessionView extends AppCompatActivity {
         confText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                //If number of lines are lesser than 22 [Square fit] just take screenshot and close
+                if (confText.getLineCount() < 22 && currentPage == 0){
+                    callScreenShot("");
+                    killScreen();
+                }
+
                 if (currentPage>0 && currentPage <= pages.size())
                     callScreenShot(""+(currentPage));
                 if (currentPage >= pages.size())
@@ -124,11 +134,12 @@ public class ConfessionView extends AppCompatActivity {
     /*
     Process and split text into 200 worded parts
      */
-    protected TreeMap<Integer,String> processText(String confessionText){
+    protected TreeMap<Integer,String> processText(String confessionText, int maxWords){
         TreeMap<Integer,String> multiPageConfession = new TreeMap<Integer,String>();
         String words[] = confessionText.split(" ");
         int wordCount = words.length;
         int keyCount = (int) Math.ceil(wordCount/(double)maxWords);
+
 
         for (int i = 0; i < keyCount;i++){
             StringBuilder sb = new StringBuilder();
@@ -140,6 +151,34 @@ public class ConfessionView extends AppCompatActivity {
         }
 
 //        System.out.println(keyCount);
+        return multiPageConfession;
+    }
+
+    protected TreeMap<Integer,String> processTextAutoSplit(TextView txtView, String confessionText, int maxWords){
+        TreeMap<Integer,String> multiPageConfession = new TreeMap<Integer,String>();
+        String words[] = confessionText.split(" ");
+        int wordCount = words.length;
+//        TextView dummyView = new TextView(getApplicationContext());
+
+        int lastWord=0,currentWord=0,mapKey=0;
+
+        while(currentWord<=(words.length-1)){
+            StringBuilder sb = new StringBuilder();
+
+            while(txtView.getLineCount() <= 22){
+                txtView.setText("");
+                sb.append(words[currentWord]+" ");
+
+                txtView.setText(sb.toString());
+                System.out.println(txtView.getLineCount());
+                currentWord++;
+            }
+            System.out.println(sb.toString());
+            multiPageConfession.put(mapKey,sb.toString());
+            mapKey++;
+        }
+
+        System.out.println(multiPageConfession);
         return multiPageConfession;
     }
 
