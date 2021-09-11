@@ -26,31 +26,27 @@ import ezvcard.property.Telephone;
 
 public class ShareToClipboardActivity extends Activity {
 
-    ClipboardManager clipboardManager = (android.content.ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
+    ClipboardManager clipboardManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        clipboardManager = (android.content.ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
         Intent intent = getIntent();
         String action = intent.getAction();
         String type = intent.getType();
-
-
+        try{
         if((!Intent.ACTION_SEND.equals(action) && !Intent.ACTION_SEND_MULTIPLE.equals(action)) ||
                 type == null) {
             finish();
             return;
         }
 
-
-
         if (type.startsWith("image/")) {
             if (Intent.ACTION_SEND_MULTIPLE.equals(action)){
                 handleSendMultipleImages(intent);
             }
             handleSendImage(intent);
-
             finish();
             return;
         }
@@ -70,6 +66,8 @@ public class ShareToClipboardActivity extends Activity {
             default:
                 handleSendText(intent, R.string.error_type_not_supported);
                 break;
+        }}catch(Exception e){
+            showToast(e.getMessage());
         }
         finish();
     }
@@ -164,16 +162,17 @@ public class ShareToClipboardActivity extends Activity {
     public void handleSendMultipleImages(Intent intent) {
         ArrayList<Uri> imageUris = new ArrayList<>();
         imageUris = intent.getParcelableArrayListExtra(Intent.EXTRA_STREAM);
-        Bundle bundle = new Bundle();
+//        Bundle bundle = new Bundle();
         if (imageUris != null) {
             getContentResolver();
             for (int i = 0; i < Math.min(5, imageUris.size()); i++) {
                 Uri uri = imageUris.get(i);
-                bundle.putString("image_source_" + i, uri.getHost());
-                clipboardManager.setPrimaryClip(ClipData.newUri(getContentResolver(),"URI",imageUris.get(i)));
+//                bundle.putString("image_source_" + i, uri.getHost());
+                clipboardManager.setPrimaryClip(
+                        ClipData.newUri(getContentResolver(),"URI",imageUris.get(i)));
                 grantUriPermission(getPackageName(), uri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
             }
-            if (imageUris.size()>5){
+            if (imageUris.size()<5){
                 showToast("Images copied to clipboard");
             }else{
                 showToast("First 5 Images copied to clipboard");

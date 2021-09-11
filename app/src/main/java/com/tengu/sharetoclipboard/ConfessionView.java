@@ -61,8 +61,7 @@ public class ConfessionView extends AppCompatActivity {
 
         //Getting multiple pages in case of long confession
 //        pages = processTextAutoSplit(confText,confessionText,maxWords);
-        pages = processText(conf
-                essionText,maxWords);
+        pages = processText(confessionText,maxWords);
         //Long Press to take screenshot
         confText.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
