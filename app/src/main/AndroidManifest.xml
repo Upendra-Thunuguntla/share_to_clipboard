@@ -20,6 +20,13 @@
                 <data android:mimeType="video/*"/>
                 <data android:mimeType="audio/*"/>
             </intent-filter>
+            <intent-filter android:label="Copy Multiple">
+                <action android:name="android.intent.action.SEND_MULTIPLE"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <data android:mimeType="image/*"/>
+                <data android:mimeType="video/*"/>
+                <data android:mimeType="application/*"/>
+            </intent-filter>
         </activity>
         <activity
             android:name=".MainActivity"
@@ -39,6 +46,10 @@
         <activity
             android:name=".ConfessionView"
             android:label="Confession View"
+            android:theme="@style/AppTheme">
+        </activity>
+        <activity android:name=".WriteConfession"
+            android:label="Write Confession"
             android:theme="@style/AppTheme">
         </activity>
     </application>

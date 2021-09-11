@@ -15,6 +15,7 @@ import com.tengu.sharetoclipboard.utils.PreferenceUtil;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.List;
 
 import ezvcard.VCard;
@@ -25,6 +26,8 @@ import ezvcard.property.Telephone;
 
 public class ShareToClipboardActivity extends Activity {
 
+    ClipboardManager clipboardManager = (android.content.ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -32,10 +35,26 @@ public class ShareToClipboardActivity extends Activity {
         Intent intent = getIntent();
         String action = intent.getAction();
         String type = intent.getType();
-        if (!Intent.ACTION_SEND.equals(action) || type == null) {
+
+
+        if((!Intent.ACTION_SEND.equals(action) && !Intent.ACTION_SEND_MULTIPLE.equals(action)) ||
+                type == null) {
             finish();
             return;
         }
+
+
+
+        if (type.startsWith("image/")) {
+            if (Intent.ACTION_SEND_MULTIPLE.equals(action)){
+                handleSendMultipleImages(intent);
+            }
+            handleSendImage(intent);
+
+            finish();
+            return;
+        }
+
         if (!type.startsWith("text/")) {
             handleSendText(intent, R.string.error_type_not_supported_by_platform);
             finish();
@@ -139,6 +158,39 @@ public class ShareToClipboardActivity extends Activity {
             return sharedText;
         } else {
             return sharedTitle;
+        }
+    }
+
+    public void handleSendMultipleImages(Intent intent) {
+        ArrayList<Uri> imageUris = new ArrayList<>();
+        imageUris = intent.getParcelableArrayListExtra(Intent.EXTRA_STREAM);
+        Bundle bundle = new Bundle();
+        if (imageUris != null) {
+            getContentResolver();
+            for (int i = 0; i < Math.min(5, imageUris.size()); i++) {
+                Uri uri = imageUris.get(i);
+                bundle.putString("image_source_" + i, uri.getHost());
+                clipboardManager.setPrimaryClip(ClipData.newUri(getContentResolver(),"URI",imageUris.get(i)));
+                grantUriPermission(getPackageName(), uri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            }
+            if (imageUris.size()>5){
+                showToast("Images copied to clipboard");
+            }else{
+                showToast("First 5 Images copied to clipboard");
+            }
+        }
+    }
+
+    public void handleSendImage(Intent intent) {
+
+        Uri uri = (Uri) intent.getParcelableExtra("android.intent.extra.STREAM");
+        if (uri != null) {
+            ContentResolver contentResolver = getContentResolver();
+            if (contentResolver.getType(uri).startsWith("image/")) {
+                clipboardManager.setPrimaryClip(ClipData.newUri(contentResolver, "URI", uri));
+                showToast("Image copied to clipboard");
+            }
+            grantUriPermission(getPackageName(), uri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
         }
     }
 
