@@ -4,18 +4,46 @@
     android:id="@+id/writeConfessionBg"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:isScrollContainer="true"
     android:orientation="vertical"
+    android:overScrollMode="ifContentScrolls"
     android:padding="20dp">
 
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="350dp"
+        android:scrollbarSize="5dp">
 
-    <EditText
-        android:id="@+id/writeConfession"
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <EditText
+                android:id="@+id/writeConfession"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="start|top|center"
+                android:hint="Paste the copied Confession"
+                android:inputType="textMultiLine|textNoSuggestions"
+                android:minHeight="350dp" />
+        </LinearLayout>
+
+    </ScrollView>
+
+<!--        <EditText-->
+<!--            android:id="@+id/writeConfession"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:gravity="start|top|center"-->
+<!--            android:hint="Paste the copied Confession"-->
+<!--            android:inputType="textMultiLine|textNoSuggestions"-->
+<!--            android:minHeight="350dp" />-->
+
+
+    <Space
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:ems="10"
-        android:gravity="start|top"
-        android:hint="Paste the copied Confession"
-        android:inputType="textMultiLine" />
+        android:minHeight="30dp" />
 
     <Button
         android:id="@+id/makeConfession"

@@ -6,6 +6,8 @@ import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.Rect;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
@@ -17,8 +19,11 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+
+import org.w3c.dom.Text;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -57,11 +62,16 @@ public class ConfessionView extends AppCompatActivity {
 
         //Setting text into View
         confText = (TextView)findViewById(R.id.conftextView);
-//        confText.setText(confessionText);
+        //Setting up the initial view with original confession
 
         //Getting multiple pages in case of long confession
-//        pages = processTextAutoSplit(confText,confessionText,maxWords);
-        pages = processText(confessionText,maxWords);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+            pages = processTextAutoSplit(confText,confessionText,maxWords);
+        }
+//        pages = processText(confessionText,maxWords);
+        confText.setText(confessionText);
+
+
         //Long Press to take screenshot
         confText.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
@@ -75,7 +85,7 @@ public class ConfessionView extends AppCompatActivity {
         confText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                System.out.println("Rendered Text Lines are "+confText.getLineCount() );
                 //If number of lines are lesser than 22 [Square fit] just take screenshot and close
                 if (confText.getLineCount() < 22 && currentPage == 0){
                     callScreenShot("");
@@ -84,13 +94,13 @@ public class ConfessionView extends AppCompatActivity {
 
                 if (currentPage>0 && currentPage <= pages.size())
                     callScreenShot(""+(currentPage));
-                if (currentPage >= pages.size())
+                if (currentPage == pages.size() || null==pages.get(currentPage))
                     killScreen();
 
                 confText.setText("");
                 confText.setText(pages.get(currentPage));
                 confText.clearComposingText();
-                System.out.println(pages.get(currentPage));
+//                System.out.println(pages.get(currentPage));
 
                 currentPage++;
             }
@@ -154,23 +164,23 @@ public class ConfessionView extends AppCompatActivity {
         return multiPageConfession;
     }
 
-    protected TreeMap<Integer,String> processTextAutoSplit(TextView txtView, String confessionText, int maxWords){
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
+    protected TreeMap<Integer,String> processTextAutoSplit(TextView txtview, String confessionText, int maxWords){
         TreeMap<Integer,String> multiPageConfession = new TreeMap<Integer,String>();
         String words[] = confessionText.split(" ");
         int wordCount = words.length;
-//        TextView dummyView = new TextView(getApplicationContext());
+
+        TextView txt = cloneTextView(txtview);
 
         int lastWord=0,currentWord=0,mapKey=0;
-
+        System.out.println(txtview.getLineCount());
         while(currentWord<=(words.length-1)){
             StringBuilder sb = new StringBuilder();
-
-            while(txtView.getLineCount() <= 22){
-                txtView.setText("");
+            lastWord = currentWord;
+            while(((currentWord-lastWord) <= maxWords) && currentWord<=(wordCount-1) ){
                 sb.append(words[currentWord]+" ");
-
-                txtView.setText(sb.toString());
-                System.out.println(txtView.getLineCount());
+                txtview.append(words[currentWord]+" ");
+                System.out.println(txtview.getLineCount());
                 currentWord++;
             }
             System.out.println(sb.toString());
@@ -180,6 +190,25 @@ public class ConfessionView extends AppCompatActivity {
 
         System.out.println(multiPageConfession);
         return multiPageConfession;
+    }
+
+
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
+    private TextView cloneTextView(TextView txtview){
+        TextView retTxtview = new TextView(this);
+        retTxtview.setPadding(
+                txtview.getPaddingLeft(),
+                txtview.getPaddingTop(),
+                txtview.getPaddingRight(),
+                txtview.getPaddingBottom()
+        );
+
+        retTxtview.setMinHeight(txtview.getMinHeight());
+        retTxtview.setGravity(txtview.getGravity());
+        retTxtview.setWidth(txtview.getWidth());
+        retTxtview.setHeight(txtview.getHeight());
+
+        return retTxtview;
     }
 
     public static<T> T[] subArray(T[] array, int beg, int end) {
@@ -216,9 +245,9 @@ public class ConfessionView extends AppCompatActivity {
             //Adding Metadata for Media scan visibility
             ContentValues values = new ContentValues();
             values.put(MediaStore.Images.Media.TITLE, "Photo");
-            values.put(MediaStore.Images.Media.DESCRIPTION, "Edited");
+            values.put(MediaStore.Images.Media.DESCRIPTION, "Confession Image");
             values.put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg");
-            values.put(MediaStore.Images.Media.DATE_TAKEN, System.currentTimeMillis ());
+            values.put(MediaStore.Images.Media.DATE_TAKEN, System.currentTimeMillis());
             values.put(MediaStore.Images.Media.DATE_ADDED, System.currentTimeMillis());
             values.put(MediaStore.Images.ImageColumns.BUCKET_ID, imageFile.toString().toLowerCase(Locale.US).hashCode());
             values.put(MediaStore.Images.ImageColumns.BUCKET_DISPLAY_NAME, imageFile.getName().toLowerCase(Locale.US));
